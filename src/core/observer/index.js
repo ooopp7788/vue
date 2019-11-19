@@ -31,6 +31,7 @@ export const observerState = {
  * object's property keys into getter/setters that
  * collect dependencies and dispatches updates.
  */
+// 可观察对象
 export class Observer {
   value: any;
   dep: Dep;
@@ -40,6 +41,7 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // 缓存实例
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       const augment = hasProto
@@ -57,6 +59,7 @@ export class Observer {
    * getter/setters. This method should only be called when
    * value type is Object.
    */
+  // 递归所有属性创建 Oberservable 实例
   walk (obj: Object) {
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
@@ -134,6 +137,8 @@ export function defineReactive (
   val: any,
   customSetter?: Function
 ) {
+  // 创建 Dep 实例
+  // 闭包存储：get set 时调用
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
@@ -145,12 +150,17 @@ export function defineReactive (
   const getter = property && property.get
   const setter = property && property.set
 
+  // 为对应 key 创建 Oberservable 实例
+  // 闭包存储：get set 时调用
   let childOb = observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
+      // target 存在时，表示 target 依赖当前属性
+      // 为 target 添加依赖 dep
+      // 同时为 childOb 添加依赖 dep
       if (Dep.target) {
         dep.depend()
         if (childOb) {
@@ -177,7 +187,9 @@ export function defineReactive (
       } else {
         val = newVal
       }
+      // 重新创建 Oberservable 实例
       childOb = observe(newVal)
+      // 通知订阅者
       dep.notify()
     }
   })

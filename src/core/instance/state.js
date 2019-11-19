@@ -169,6 +169,7 @@ const computedWatcherOptions = { lazy: true }
 
 function initComputed (vm: Component, computed: Object) {
   process.env.NODE_ENV !== 'production' && checkOptionType(vm, 'computed')
+  // watcher 实例 挂载到 vm._computedWatchers 属性上
   const watchers = vm._computedWatchers = Object.create(null)
 
   for (const key in computed) {
@@ -184,6 +185,7 @@ function initComputed (vm: Component, computed: Object) {
       }
     }
     // create internal watcher for the computed property.
+    // 每个 computed 属性 对应一个 Watcher 实例
     watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions)
 
     // component-defined computed properties are already defined on the
@@ -202,10 +204,12 @@ function initComputed (vm: Component, computed: Object) {
 }
 
 export function defineComputed (target: any, key: string, userDef: Object | Function) {
+  // userDef: function get
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = createComputedGetter(key)
     sharedPropertyDefinition.set = noop
   } else {
+    // userDef: { get set }
     sharedPropertyDefinition.get = userDef.get
       ? userDef.cache !== false
         ? createComputedGetter(key)
@@ -220,9 +224,11 @@ export function defineComputed (target: any, key: string, userDef: Object | Func
 
 function createComputedGetter (key) {
   return function computedGetter () {
+    // 获取对应 key 的 watcher
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
       if (watcher.dirty) {
+        // lazy watcher 执行 this.get
         watcher.evaluate()
       }
       if (Dep.target) {

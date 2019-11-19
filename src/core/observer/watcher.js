@@ -91,6 +91,7 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
+    // 调用 get 时，说明此 watcher 被依赖，需要追踪依赖，设置 target，加入 targetStack 队列
     pushTarget(this)
     let value
     const vm = this.vm
