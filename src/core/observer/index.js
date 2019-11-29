@@ -39,6 +39,7 @@ export class Observer {
 
   constructor (value: any) {
     this.value = value
+    // dep 实例
     this.dep = new Dep()
     this.vmCount = 0
     // 缓存实例
@@ -59,7 +60,7 @@ export class Observer {
    * getter/setters. This method should only be called when
    * value type is Object.
    */
-  // 递归所有属性创建 Oberservable 实例
+  // 递归所有属性 defineReactive
   walk (obj: Object) {
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
@@ -141,6 +142,7 @@ export function defineReactive (
   // 闭包存储：get set 时调用
   const dep = new Dep()
 
+  // obj[key] 本身的 descriptor
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
@@ -151,7 +153,6 @@ export function defineReactive (
   const setter = property && property.set
 
   // 为对应 key 创建 Oberservable 实例
-  // 闭包存储：get set 时调用
   let childOb = observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,

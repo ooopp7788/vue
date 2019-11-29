@@ -169,7 +169,7 @@ const computedWatcherOptions = { lazy: true }
 
 function initComputed (vm: Component, computed: Object) {
   process.env.NODE_ENV !== 'production' && checkOptionType(vm, 'computed')
-  // watcher 实例 挂载到 vm._computedWatchers 属性上
+  // watcher 实例 挂载到 vm._computedWatchers[key] 上
   const watchers = vm._computedWatchers = Object.create(null)
 
   for (const key in computed) {
@@ -192,6 +192,7 @@ function initComputed (vm: Component, computed: Object) {
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
     if (!(key in vm)) {
+      // defineComputed
       defineComputed(vm, key, userDef)
     } else if (process.env.NODE_ENV !== 'production') {
       if (key in vm.$data) {
@@ -228,7 +229,7 @@ function createComputedGetter (key) {
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
       if (watcher.dirty) {
-        // lazy watcher 执行 this.get
+        // lazy watcher 执行 watcher.get()
         watcher.evaluate()
       }
       if (Dep.target) {

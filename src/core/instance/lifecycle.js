@@ -183,6 +183,7 @@ export function mountComponent (
     }
   } else {
     updateComponent = () => {
+      // 实际调用 patch
       vm._update(vm._render(), hydrating)
     }
   }

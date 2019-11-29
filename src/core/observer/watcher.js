@@ -56,18 +56,23 @@ export default class Watcher {
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
+    // 回调
     this.cb = cb
     this.id = ++uid // uid for batching
     this.active = true
     this.dirty = this.lazy // for lazy watchers
+    // 记录依赖关系，用以清理、维护 dep.subs 和 watcher 间的引用关系
     this.deps = []
     this.newDeps = []
+    // 维护 dep 的 id, 保持 dep 唯一性
+    // 旧、新 depIds, cleanUp
     this.depIds = new Set()
     this.newDepIds = new Set()
     this.expression = process.env.NODE_ENV !== 'production'
       ? expOrFn.toString()
       : ''
     // parse expression for getter
+    // getter 赋值
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
@@ -91,10 +96,13 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
-    // 调用 get 时，说明此 watcher 被依赖，需要追踪依赖，设置 target，加入 targetStack 队列
+    // 调用 get 时，收集 watcher 的依赖
+    // 将当前 Dep.target 加入 targetStack 队列，缓存旧的 target
+    // 再设置 Dep.target = watcher
     pushTarget(this)
     let value
     const vm = this.vm
+    // 调用 this.getter, 也就是传入 expOrFn
     if (this.user) {
       try {
         value = this.getter.call(vm, vm)
@@ -109,6 +117,8 @@ export default class Watcher {
     if (this.deep) {
       traverse(value)
     }
+    // 依赖收集完毕，移除当前 watcher
+    // 恢复旧 target
     popTarget()
     this.cleanupDeps()
     return value
@@ -119,6 +129,7 @@ export default class Watcher {
    */
   addDep (dep: Dep) {
     const id = dep.id
+    // 根据 id 判断 dep 唯一性
     if (!this.newDepIds.has(id)) {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
@@ -135,11 +146,13 @@ export default class Watcher {
     let i = this.deps.length
     while (i--) {
       const dep = this.deps[i]
+      // 根据 newDepIds 清理 deps
       if (!this.newDepIds.has(dep.id)) {
         dep.removeSub(this)
       }
     }
     let tmp = this.depIds
+    // 新值同步到旧值
     this.depIds = this.newDepIds
     this.newDepIds = tmp
     this.newDepIds.clear()
@@ -199,6 +212,7 @@ export default class Watcher {
    * Evaluate the value of the watcher.
    * This only gets called for lazy watchers.
    */
+  // lazy 时会调用，做一次 get 取值
   evaluate () {
     this.value = this.get()
     this.dirty = false
@@ -210,6 +224,7 @@ export default class Watcher {
   depend () {
     let i = this.deps.length
     while (i--) {
+      // dep 添加 watcher 依赖
       this.deps[i].depend()
     }
   }
@@ -217,6 +232,7 @@ export default class Watcher {
   /**
    * Remove self from all dependencies' subscriber list.
    */
+  // 销毁时移除 dep.subs[] 对 watcher 的引用
   teardown () {
     if (this.active) {
       // remove self from vm's watcher list

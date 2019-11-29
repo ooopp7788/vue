@@ -305,7 +305,7 @@ export function createPatchFunction (backend) {
       createElm(vnodes[startIdx], insertedVnodeQueue, parentElm, refElm)
     }
   }
-
+  // 调用 vnode.destroy(vnode)
   function invokeDestroyHook (vnode) {
     let i, j
     const data = vnode.data
@@ -314,6 +314,7 @@ export function createPatchFunction (backend) {
       for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode)
     }
     if (isDef(i = vnode.children)) {
+      // 递归 vnode.children
       for (j = 0; j < vnode.children.length; ++j) {
         invokeDestroyHook(vnode.children[j])
       }

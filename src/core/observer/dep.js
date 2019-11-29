@@ -26,7 +26,7 @@ export default class Dep {
   removeSub (sub: Watcher) {
     remove(this.subs, sub)
   }
-
+  // 为 watcher 添加依赖
   depend () {
     if (Dep.target) {
       Dep.target.addDep(this)
