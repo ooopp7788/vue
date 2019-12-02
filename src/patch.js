@@ -251,6 +251,7 @@ export function createPatchFunction (backend) {
   // set scope id attribute for scoped CSS.
   // this is implemented as a special case to avoid the overhead
   // of going through the normal attribute patching process.
+  // dom 元素添加 scopeId
   function setScope (vnode) {
     let i
     let ancestor = vnode
@@ -447,6 +448,7 @@ export function createPatchFunction (backend) {
     const ch = vnode.children
     // 遍历调用 update 钩子, 更新 ele vnode 属性
     if (isDef(data) && isPatchable(vnode)) {
+      // 调用 hook.update
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }
@@ -617,6 +619,7 @@ export function createPatchFunction (backend) {
             ancestor = ancestor.parent
           }
           if (isPatchable(vnode)) {
+            // hook.create
             for (let i = 0; i < cbs.create.length; ++i) {
               cbs.create[i](emptyNode, vnode.parent)
             }

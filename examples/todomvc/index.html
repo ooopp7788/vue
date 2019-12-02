@@ -22,9 +22,9 @@
         <ul class="todo-list">
           <li v-for="todo in filteredTodos"
             class="todo"
-            :key="todo.id"
             :class="{ completed: todo.completed, editing: todo == editedTodo }">
             <div class="view">
+              <input type="checkbox" v-model="todo.completed">
               <input class="toggle" type="checkbox" v-model="todo.completed">
               <label @dblclick="editTodo(todo)">{{ todo.title }}</label>
               <button class="destroy" @click="removeTodo(todo)"></button>
@@ -63,7 +63,7 @@
     if (navigator.userAgent.indexOf('PhantomJS') > -1) localStorage.clear()
     </script>
     <!-- Delete ".min" for console warnings in development -->
-    <script src="../../dist/vue.min.js"></script>
+    <script src="../../dist/vue.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

@@ -235,6 +235,7 @@ function mergeHook (one: Function, two: Function): Function {
 
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
+// v-model 转换成 @on('input') 和 :value 形式
 function transformModel (options, data: any) {
   const prop = (options.model && options.model.prop) || 'value'
   const event = (options.model && options.model.event) || 'input'
