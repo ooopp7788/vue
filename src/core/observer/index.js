@@ -160,8 +160,8 @@ export function defineReactive (
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
       // target 存在时，表示 target 依赖当前属性
-      // 为 target 添加依赖 dep
-      // 同时为 childOb 添加依赖 dep
+      // 为 target 添加依赖 dep，同时在 dep 中添加观察者 watcher
+      // 为 target 添加依赖 childOb.dep，同时在 childOb.dep 中添加观察者 watcher
       if (Dep.target) {
         dep.depend()
         if (childOb) {
