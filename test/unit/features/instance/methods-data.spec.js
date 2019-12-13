@@ -26,6 +26,9 @@ describe('Instance methods data', () => {
         data: {
           a: {
             b: 1
+          },
+          유니코드: {
+            なまえ: 'ok'
           }
         },
         methods: {
@@ -73,7 +76,7 @@ describe('Instance methods data', () => {
     })
 
     it('deep watch', done => {
-      var oldA = vm.a
+      const oldA = vm.a
       vm.$watch('a', spy, { deep: true })
       vm.a.b = 2
       waitForUpdate(() => {
@@ -85,7 +88,7 @@ describe('Instance methods data', () => {
     })
 
     it('handler option', done => {
-      var oldA = vm.a
+      const oldA = vm.a
       vm.$watch('a', {
         handler: spy,
         deep: true
@@ -108,7 +111,16 @@ describe('Instance methods data', () => {
       expect(spy).toHaveBeenCalledWith(1)
     })
 
-    it('warn expresssion', () => {
+    it('handler option in string', () => {
+      vm.$watch('유니코드.なまえ', {
+        handler: 'foo',
+        immediate: true
+      })
+      expect(spy.calls.count()).toBe(1)
+      expect(spy).toHaveBeenCalledWith('ok')
+    })
+
+    it('warn expression', () => {
       vm.$watch('a + b', spy)
       expect('Watcher only accepts simple dot-delimited paths').toHaveBeenWarned()
     })

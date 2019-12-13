@@ -27,6 +27,7 @@ declare type VNodeWithData = {
   context: Component;
   key: string | number | void;
   parent?: VNodeWithData;
+  componentOptions?: VNodeComponentOptions;
   componentInstance?: Component;
   isRootInsert: boolean;
 };
@@ -35,12 +36,13 @@ declare interface VNodeData {
   key?: string | number;
   slot?: string;
   ref?: string;
+  is?: string;
   pre?: boolean;
   tag?: string;
   staticClass?: string;
   class?: any;
   staticStyle?: { [key: string]: any };
-  style?: Array<Object> | Object;
+  style?: string | Array<Object> | Object;
   normalizedStyle?: Object;
   props?: { [key: string]: any };
   attrs?: { [key: string]: string };
@@ -69,6 +71,7 @@ declare type VNodeDirective = {
   value?: any;
   oldValue?: any;
   arg?: string;
+  oldArg?: string;
   modifiers?: ASTModifiers;
   def?: Object;
 };

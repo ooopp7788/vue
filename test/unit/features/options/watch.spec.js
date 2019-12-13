@@ -1,11 +1,14 @@
 import Vue from 'vue'
 import testObjectOption from '../../../helpers/test-object-option'
+import { finished } from 'stream';
 
 describe('Options watch', () => {
   let spy
   beforeEach(() => {
     spy = jasmine.createSpy('watch')
   })
+
+  testObjectOption('watch')
 
   it('basic usage', done => {
     const vm = new Vue({
@@ -23,8 +26,6 @@ describe('Options watch', () => {
       expect(spy).toHaveBeenCalledWith(2, 1)
     }).then(done)
   })
-
-  testObjectOption('watch')
 
   it('string method name', done => {
     const vm = new Vue({
@@ -106,9 +107,9 @@ describe('Options watch', () => {
   })
 
   it('correctly merges multiple extends', done => {
-    var spy2 = jasmine.createSpy('A')
-    var spy3 = jasmine.createSpy('B')
-    var A = Vue.extend({
+    const spy2 = jasmine.createSpy('A')
+    const spy3 = jasmine.createSpy('B')
+    const A = Vue.extend({
       data: function () {
         return {
           a: 0,
@@ -120,21 +121,21 @@ describe('Options watch', () => {
       }
     })
 
-    var B = Vue.extend({
+    const B = Vue.extend({
       extends: A,
       watch: {
         a: spy2
       }
     })
 
-    var C = Vue.extend({
+    const C = Vue.extend({
       extends: B,
       watch: {
         a: spy3
       }
     })
 
-    var vm = new C()
+    const vm = new C()
     vm.a = 1
 
     waitForUpdate(() => {
@@ -142,5 +143,36 @@ describe('Options watch', () => {
       expect(spy2).toHaveBeenCalledWith(1, 0)
       expect(spy3).toHaveBeenCalledWith(1, 0)
     }).then(done)
+  })
+
+  it('should support watching unicode paths', done => {
+    const vm = new Vue({
+      data: {
+        数据: 1
+      },
+      watch: {
+        数据: spy
+      }
+    })
+    expect(spy).not.toHaveBeenCalled()
+    vm['数据'] = 2
+    expect(spy).not.toHaveBeenCalled()
+    waitForUpdate(() => {
+      expect(spy).toHaveBeenCalledWith(2, 1)
+    }).then(done)
+  })
+
+  it('should not warn proper usage', () => {
+    const vm = new Vue({
+      data: {
+        foo: { _bar: 1 }, // element has such watchers...
+        prop1: 123
+      },
+      watch: {
+        'foo._bar': () => {},
+        prop1 () {}
+      }
+    })
+    expect(`Failed watching path`).not.toHaveBeenWarned()
   })
 })
