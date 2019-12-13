@@ -1,4 +1,4 @@
-function Vue(options) {
+function Vue (options) {
   const options = vm.$options
 
   // locate first non-abstract parent
@@ -81,4 +81,8 @@ function Vue(options) {
   }
 
   callHook(vm, 'created')
+
+  if (vm.$options.el) {
+    vm.$mount(vm.$options.el)
+  }
 }
