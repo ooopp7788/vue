@@ -186,6 +186,7 @@ function initComputed (vm: Component, computed: Object) {
 
     if (!isSSR) {
       // create internal watcher for the computed property.
+      // 每个 computed 属性 对应一个 Watcher 实例
       watchers[key] = new Watcher(
         vm,
         getter || noop,
@@ -193,10 +194,6 @@ function initComputed (vm: Component, computed: Object) {
         computedWatcherOptions
       )
     }
-    // create internal watcher for the computed property.
-    // 每个 computed 属性 对应一个 Watcher 实例
-    watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions)
-
     // component-defined computed properties are already defined on the
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
